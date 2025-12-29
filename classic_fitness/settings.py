@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'api',
     'attendance',
     'classes',
-    'feedback',
+    'services',
     'memberships',
     'payments',
     'reports',
