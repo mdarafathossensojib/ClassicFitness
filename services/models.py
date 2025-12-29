@@ -30,7 +30,6 @@ class Feedback(models.Model):
     member = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        limit_choices_to={'role': 'MEMBER'}
     )
     fitness_class = models.ForeignKey(
         FitnessClass,
