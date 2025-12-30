@@ -50,3 +50,18 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
 
         serializer = ClassBookingSerializer(booking)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def my_booking(self, request):
+        my_classes = ClassBooking.objects.filter(member=request.user)
+
+        if not my_classes.exists():
+            return Response(
+                {'detail': 'You have not booked any class'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = ClassBookingSerializer(my_classes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
