@@ -22,6 +22,9 @@ class GymGallery(models.Model):
     image = CloudinaryField('GymGallery')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Feedback(models.Model):
     member = models.ForeignKey(

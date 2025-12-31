@@ -3,14 +3,21 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from classes.models import FitnessClass, ClassBooking
 from classes.serializers import FitnessClassSerializer, ClassBookingSerializer, BookClassSerializer
-from accounts.permissions import IsAdmin
+from accounts.permissions import IsAdmin, HasActiveSubscription
 
 
 # Create your views here.
 
 class FitnessClassViewSet(viewsets.ModelViewSet):
+    """
+    Fitness Class Management API
+    Handles all operations related to gym fitness classes
+    - Admin: Full CRUD access
+    - Staff: Read access
+    - Member: View, Book classes(only subscription member)
+    """
+
     queryset = FitnessClass.objects.select_related('instructor').prefetch_related('bookings').all()
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == 'book':
@@ -18,9 +25,25 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
         return FitnessClassSerializer
 
     def get_permissions(self):
+        """
+        - List & Retrieve: Public
+        - Create/Update/Delete: Admin only
+        - Book & My Booking: Authenticated users
+        """
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        
+        if self.action == 'book':
+            return [permissions.IsAuthenticated(), HasActiveSubscription()]
+
+        if self.action == 'my_booking':
+            return [permissions.IsAuthenticated()]
+
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [permissions.IsAuthenticated(), IsAdmin()]
+
         return [permissions.IsAuthenticated()]
+
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def book(self, request, pk=None):

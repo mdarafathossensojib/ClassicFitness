@@ -23,9 +23,15 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = ['id', 'member', 'member_email', 'fitness_class', 'rating', 'comment', 'created_at']
-        read_only_fields = ['member', 'member_email', 'created_at']
+        read_only_fields = ['member', 'member_email',  'fitness_class', 'created_at']
 
-    def create(self, validated_data):
-        validated_data['member'] = self.context['request'].user
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     request = self.context['request']
+    #     class_id = self.context['class_id']
+    #     fitness_class = get_object_or_404(FitnessClass, pk=class_id)
+
+    #     validated_data['member'] = request.user
+    #     validated_data['fitness_class'] = fitness_class
+
+    #     return super().create(validated_data)
 

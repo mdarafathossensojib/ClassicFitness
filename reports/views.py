@@ -8,9 +8,23 @@ from memberships.models import Subscription
 from django.db.models.functions import TruncMonth
 from datetime import timedelta
 from services.models import Feedback
-from classes.models import FitnessClass
 
 class AttendanceSummaryReport(APIView):
+    """
+    Attendance Summary Report API
+
+    Provides high-level attendance statistics
+    across all fitness classes.
+
+    Access:
+    - Admin only
+
+    Metrics:
+    - Total attendance records
+    - Present vs Absent count
+    - Class-wise attendance totals
+    """
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
@@ -31,6 +45,19 @@ class AttendanceSummaryReport(APIView):
 
 
 class MembershipStatusReport(APIView):
+    """
+    Membership Status Analytics API
+
+    Shows overall membership health of the gym.
+
+    Access:
+    - Admin only
+
+    Metrics:
+    - Active memberships
+    - Expired memberships
+    """
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
@@ -94,6 +121,28 @@ class MembershipExpirySoonReport(APIView):
 
 
 class FeedbackReportAPIView(APIView):
+    """
+    Feedback Analytics Report API
+
+    This endpoint provides aggregated feedback analytics
+    for all fitness classes in the gym.
+
+    Access Level:
+    - Admin: Allowed
+    - Staff: Allowed (if permission extended)
+    - Member: Just All FeedBack View Only
+
+    Data Provided:
+    - Class-wise average rating
+    - Total feedback count per class
+    - Rating distribution (1–5 stars) per class
+
+    Purpose:
+    - Used in Admin Dashboard
+    - Used in Reports & Analytics section
+    - Helps evaluate class quality and instructor performance
+    """
+
     permission_classes = [IsAdminUser] 
 
     def get(self, request):

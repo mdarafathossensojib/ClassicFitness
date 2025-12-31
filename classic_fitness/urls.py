@@ -4,7 +4,7 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from api.views import api_root_view
+from .views import api_root_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -15,8 +15,8 @@ schema_view = get_schema_view(
         default_version="v1",
         description="API Documentation for GYM Management Project",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@library.com"),
-        license=openapi.License(name="BSD License"),
+        contact=openapi.Contact(email="contact@classicFit.com"),
+        license=openapi.License(name="BSD License")
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

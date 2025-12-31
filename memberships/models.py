@@ -5,17 +5,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class MembershipPlan(models.Model):
-    PLAN_WEEKLY = 'WEEKLY'
-    PLAN_MONTHLY = 'MONTHLY'
-    PLAN_YEARLY = 'YEARLY'
-
-    PLAN_CHOICES = (
-        (PLAN_WEEKLY, 'Weekly'),
-        (PLAN_MONTHLY, 'Monthly'),
-        (PLAN_YEARLY, 'Yearly'),
-    )
-
-    name = models.CharField(max_length=50, choices=PLAN_CHOICES)
+    name = models.CharField(max_length=50)
     duration_days = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True)

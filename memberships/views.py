@@ -12,6 +12,19 @@ from accounts.permissions import IsAdminOrReadOnly
 # Create your views here.
 
 class MembershipPlanViewSet(ModelViewSet):
+    """
+    Membership Plan Management API
+
+    This API manages gym membership plans such as
+    Weekly, Monthly, Half-Yearly and Yearly subscriptions.
+
+    Roles:
+    - Admin:
+        - Create, update, delete membership plans
+    - Member:
+        - View available plans
+    """
+    
     queryset = MembershipPlan.objects.filter(is_active=True)
     permission_classes = [IsAdminOrReadOnly]
 
