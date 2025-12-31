@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from classes.models import FitnessClass
+from cloudinary.models import CloudinaryField
 
 User = settings.AUTH_USER_MODEL
 
@@ -8,11 +9,7 @@ User = settings.AUTH_USER_MODEL
 class GymService(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(
-        upload_to='services/',
-        blank=True,
-        null=True
-    )
+    image = CloudinaryField('GymService')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -22,7 +19,7 @@ class GymService(models.Model):
     
 class GymGallery(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='gallery/')
+    image = CloudinaryField('GymGallery')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 

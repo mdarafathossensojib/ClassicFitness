@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 
 User = settings.AUTH_USER_MODEL
 
@@ -7,11 +8,7 @@ User = settings.AUTH_USER_MODEL
 class FitnessClass(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(
-        upload_to='classes/',
-        blank=True,
-        null=True
-    )
+    image = CloudinaryField('FitnessClass', blank=True, null=True)
     instructor = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

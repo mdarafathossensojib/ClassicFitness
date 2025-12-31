@@ -11,9 +11,9 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Library Management API",
+        title="Classic Fitness (GYM Management) API",
         default_version="v1",
-        description="API Documentation for Library Management Project",
+        description="API Documentation for GYM Management Project",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@library.com"),
         license=openapi.License(name="BSD License"),
