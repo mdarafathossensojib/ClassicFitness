@@ -178,7 +178,7 @@ POST    /api/v1/gallery/              Admin only
    python manage.py runserver
    ```    |
 
-## API Documentation
+API Documentation
 Swagger documentation is available at:
 ```
 http://127.0.0.1:8000/swagger/
@@ -189,7 +189,7 @@ ReDoc documentation is available at:
 http://127.0.0.1:8000/redoc/
 ```
 
-## Environment Variables
+Environment Variables
 Create a `.env` file in the root directory and add the following:
 ```ini
 SECRET_KEY=your_secret_key
@@ -199,11 +199,11 @@ ALLOWED_HOSTS=*
 EMAIL_HOST=your_email_host
 ```
 
-## License
+License
 This project is licensed under the MIT License.
 
 ---
-### Author
+Author
 MD Arafat Hossen
 Backend Developer (Django & DRF)
 GitHub: https://github.com/mdarafathossensojib/
