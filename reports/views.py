@@ -7,7 +7,7 @@ from django.utils import timezone
 from memberships.models import Subscription
 from django.db.models.functions import TruncMonth
 from datetime import timedelta
-from services.models import Feedback
+from feedback.models import ClassFeedback, Feedback
 
 class AttendanceSummaryReport(APIView):
     """
@@ -120,7 +120,7 @@ class MembershipExpirySoonReport(APIView):
         return Response(expiring)
 
 
-class FeedbackReportAPIView(APIView):
+class ClassFeedbackReportAPIView(APIView):
     """
     Feedback Analytics Report API
 
@@ -146,12 +146,12 @@ class FeedbackReportAPIView(APIView):
     permission_classes = [IsAdminUser] 
 
     def get(self, request):
-        data = Feedback.objects.values('fitness_class__title').annotate(
+        data = ClassFeedback.objects.values('fitness_class__title').annotate(
             average_rating=Avg('rating'),
             total_reviews=Count('id')
         ).order_by('-average_rating')
 
-        rating_dist = Feedback.objects.values('fitness_class__title', 'rating').annotate(
+        rating_dist = ClassFeedback.objects.values('fitness_class__title', 'rating').annotate(
             count=Count('id')
         ).order_by('fitness_class__title', 'rating')
 
