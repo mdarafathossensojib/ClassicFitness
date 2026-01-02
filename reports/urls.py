@@ -1,5 +1,5 @@
 from django.urls import path
-from reports.views import AttendanceSummaryReport, MembershipStatusReport, MembershipPlanReport,MonthlyMembershipReport, MembershipExpirySoonReport, FeedbackReportAPIView
+from reports.views import AttendanceSummaryReport, MembershipStatusReport, MembershipPlanReport,MonthlyMembershipReport, MembershipExpirySoonReport, ClassFeedbackReportAPIView
 
 urlpatterns = [
     path('attendance/summary/', AttendanceSummaryReport.as_view(), name="attendance-summary"),
@@ -7,6 +7,7 @@ urlpatterns = [
     path('memberships/plans/', MembershipPlanReport.as_view(), name="memberships-plans"),
     path('memberships/monthly/', MonthlyMembershipReport.as_view(), name="memberships-monthly"),
     path('memberships/expiring-soon/', MembershipExpirySoonReport.as_view(), name="memberships-expiring-soon"),
-    path('feedback/', FeedbackReportAPIView.as_view(), name='feedback-report'),
+    # path('feedback/', ClassFeedbackReportAPIView.as_view(), name='feedback-report'),
+    path('feedback/classes/', ClassFeedbackReportAPIView.as_view(), name='feedback-report-classes'),
 
 ]
