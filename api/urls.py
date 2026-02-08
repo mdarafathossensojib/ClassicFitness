@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework_nested import routers
 from classes.views import FitnessClassViewSet
-from memberships.views import MembershipPlanViewSet
+from memberships.views import MembershipPlanViewSet, initiate_payment, payment_success, payment_fail, payment_cancel
 from attendance.views import AttendanceViewSet
 from services.views import GymServiceViewSet, GymGalleryViewSet
 from feedback.views import ClassFeedbackViewSet, FeedbackViewSet
@@ -25,5 +25,9 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('accounts/', include('accounts.urls')),
     path('reports/', include('reports.urls')),
+    path('payment/initiate/', initiate_payment, name='initiate-payment'),
+    path('payment/success/', payment_success, name='payment-success'),
+    path('payment/fail/', payment_fail, name='payment-fail'),
+    path('payment/cancel/', payment_cancel, name='payment-cancel'),
 
 ]
