@@ -5,15 +5,37 @@ from cloudinary.models import CloudinaryField
 User = settings.AUTH_USER_MODEL
 
 
+
+class Trainer(models.Model):
+    name = models.CharField(max_length=100)
+    role = models.CharField(max_length=100)
+    image = CloudinaryField('Trainer', blank=True, null=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
+    experience = models.TextField(blank=True, null=True)
+    certifications = models.TextField(blank=True, null=True)
+    clients = models.IntegerField(default=0)
+    specialties = models.TextField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    philosophy = models.TextField(blank=True, null=True)
+    schedule = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class FitnessClass(models.Model):
     title = models.CharField(max_length=100)
+    level = models.CharField(max_length=50, blank=True, null=True)
     description = models.TextField()
+    longDescription = models.TextField(blank=True, null=True)
+    benefits = models.TextField(blank=True, null=True)
+    whatToExpect = models.TextField(blank=True, null=True)
     image = CloudinaryField('FitnessClass', blank=True, null=True)
     instructor = models.ForeignKey(
-        User,
+        Trainer,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='instructed_classes'
+        related_name='fitness_classes'
     )
     class_date = models.DateField()
     start_time = models.TimeField()

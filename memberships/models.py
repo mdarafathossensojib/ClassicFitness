@@ -6,9 +6,12 @@ User = settings.AUTH_USER_MODEL
 
 class MembershipPlan(models.Model):
     name = models.CharField(max_length=50)
-    duration_days = models.PositiveIntegerField()
+    duration_days = models.PositiveIntegerField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    yearlyPrice = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    period = models.CharField(max_length=20, blank=True, null=True)
     description = models.TextField(blank=True)
+    features = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

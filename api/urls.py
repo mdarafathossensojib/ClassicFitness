@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework_nested import routers
-from classes.views import FitnessClassViewSet
+from classes.views import FitnessClassViewSet, TrainerViewSet
 from memberships.views import MembershipPlanViewSet, initiate_payment, payment_success, payment_fail, payment_cancel
 from attendance.views import AttendanceViewSet
 from services.views import GymServiceViewSet, GymGalleryViewSet
@@ -9,6 +9,7 @@ from feedback.views import ClassFeedbackViewSet, FeedbackViewSet
 
 router = routers.DefaultRouter()
 router.register('classes', FitnessClassViewSet, basename='fitness-class')
+router.register('trainers', TrainerViewSet, basename='trainers')
 router.register('membership-plans', MembershipPlanViewSet, basename='membership-plans')
 router.register('attendance', AttendanceViewSet, basename='attendance')
 router.register('services', GymServiceViewSet, basename='services')
