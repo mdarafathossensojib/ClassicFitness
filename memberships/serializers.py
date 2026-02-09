@@ -5,7 +5,7 @@ from memberships.models import MembershipPlan, Subscription
 class MembershipPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = MembershipPlan
-        fields = ['id', 'name', 'price', 'duration_days', 'is_active']
+        fields = ['id', 'name', 'price', 'description', 'yearlyPrice', 'period', 'features', 'duration_days', 'is_active']
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
