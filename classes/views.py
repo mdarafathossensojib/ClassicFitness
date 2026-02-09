@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from classes.models import FitnessClass, ClassBooking
-from classes.serializers import FitnessClassSerializer, ClassBookingSerializer, BookClassSerializer
+from classes.models import FitnessClass, ClassBooking, Trainer
+from classes.serializers import FitnessClassSerializer, ClassBookingSerializer, BookClassSerializer, TrainerSerializer
 from accounts.permissions import IsAdmin, HasActiveSubscription
 
 
@@ -88,3 +88,23 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
         serializer = ClassBookingSerializer(my_classes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class TrainerViewSet(viewsets.ModelViewSet):
+    """
+    Trainer Management API
+    Handles all operations related to gym trainers
+    - Admin: Full CRUD access
+    - Staff & Member: Read access
+    """
+
+    queryset = Trainer.objects.all()
+    serializer_class = TrainerSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAuthenticated(), IsAdmin()]
+
+        return [permissions.IsAuthenticated()]
