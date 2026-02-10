@@ -14,7 +14,9 @@ class UserViewSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         fields = ['id', 'first_name', 'last_name', 'email', 'address', 'phone_number']
 
+
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'address', 'phone_number', 'profile_image']
+        fields = ['first_name', 'last_name', 'address', 'phone_number', 'profile_image', 'date_of_birth', 'gender', 'height', 'weight', 'fitness_goal', 'emergency_contact',
+        ]
