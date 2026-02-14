@@ -12,7 +12,7 @@ class UserCreateSerializer(BaseUserCreateSerializer):
 
 class UserViewSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ['id', 'first_name', 'last_name', 'email', 'address', 'phone_number']
+        fields = ['id', 'first_name', 'last_name', 'email', 'address', 'phone_number', 'is_staff']
 
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
