@@ -5,6 +5,7 @@ from memberships.views import MembershipPlanViewSet, initiate_payment, payment_s
 from attendance.views import AttendanceViewSet
 from services.views import GymServiceViewSet, GymGalleryViewSet
 from feedback.views import ClassFeedbackViewSet, FeedbackViewSet
+from payments.views import my_payment_history
 
 
 router = routers.DefaultRouter()
@@ -30,5 +31,6 @@ urlpatterns = [
     path('payment/success/', payment_success, name='payment-success'),
     path('payment/fail/', payment_fail, name='payment-fail'),
     path('payment/cancel/', payment_cancel, name='payment-cancel'),
+    path('payment/history/', my_payment_history, name='payment-history'),
 
 ]
