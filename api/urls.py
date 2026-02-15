@@ -32,6 +32,6 @@ urlpatterns = [
     path('payment/fail/', payment_fail, name='payment-fail'),
     path('payment/cancel/', payment_cancel, name='payment-cancel'),
     path('payment/history/', my_payment_history, name='payment-history'),
-    path("payments/invoice/<str:invoice_id>/", download_invoice),
+    path("payments/invoice/<int:payment_id>/", download_invoice),
 
 ]
