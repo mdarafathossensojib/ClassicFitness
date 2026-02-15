@@ -84,45 +84,36 @@ def initiate_payment(request):
     user = request.user
     plan_id = request.data.get('plan_id')
 
-    try:
-        plan = MembershipPlan.objects.get(id=plan_id)
-    except MembershipPlan.DoesNotExist:
-        return Response({"error": "Invalid plan"}, status=400)
+    plan = MembershipPlan.objects.get(id=plan_id)
 
-    # Create Payment (PENDING)
+    # Create Pending Payment
     payment = Payment.objects.create(
         member=user,
         amount=plan.price,
         status=Payment.STATUS_PENDING
     )
 
-    settings_data = {
+    settings = {
         'store_id': config('store_id'),
         'store_pass': config('store_pass'),
         'issandbox': True
     }
 
-    sslcz = SSLCOMMERZ(settings_data)
+    sslcz = SSLCOMMERZ(settings)
 
     post_body = {
-        'total_amount': float(plan.price),
+        'total_amount': plan.price,
         'currency': "BDT",
         'tran_id': f"trxn_{payment.id}",
         'success_url': f"{main_settings.BACKEND_URL}/api/v1/payment/success/",
         'fail_url': f"{main_settings.BACKEND_URL}/api/v1/payment/fail/",
         'cancel_url': f"{main_settings.BACKEND_URL}/api/v1/payment/cancel/",
-        'emi_option': 0,
         'cus_name': f"{user.first_name} {user.last_name}",
         'cus_email': user.email,
         'cus_phone': user.phone_number,
-        'cus_add1': user.address,
-        'cus_city': "Dhaka",
-        'cus_country': "Bangladesh",
-        'shipping_method': "NO",
-        'num_of_item': 1,
         'product_name': plan.name,
         'product_category': "Membership",
-        'product_profile': "general",
+        'product_profile': "general"
     }
 
     response = sslcz.createSession(post_body)
@@ -132,25 +123,22 @@ def initiate_payment(request):
             'payment_url': response.get('GatewayPageURL')
         })
 
-    return Response({'error': 'Failed to initiate payment'}, status=400)
+    return Response({'error': 'Failed'}, status=400)
+
 
 @api_view(['POST'])
 def payment_success(request):
-    tran_id = request.data.get('tran_id')
-
+    tran_id = request.data.get('tran_id')  # trxn_5
     payment_id = tran_id.split('_')[1]
 
-    try:
-        payment = Payment.objects.get(id=payment_id)
-    except Payment.DoesNotExist:
-        return Response({"error": "Invalid payment"}, status=400)
+    payment = Payment.objects.get(id=payment_id)
 
-    # Update Payment
+    # Update payment
     payment.status = Payment.STATUS_PAID
     payment.paid_at = timezone.now()
     payment.save()
 
-    # Create Subscription
+    # Create / Update Subscription
     plan = MembershipPlan.objects.get(price=payment.amount)
 
     start_date = timezone.now().date()
@@ -162,24 +150,18 @@ def payment_success(request):
             'plan': plan,
             'start_date': start_date,
             'end_date': end_date,
-            'is_active': True
+            'is_active': True,
         }
     )
 
+    # Link subscription to payment
     payment.subscription = subscription
     payment.save()
-
-    # Save Transaction
-    Transaction.objects.create(
-        payment=payment,
-        gateway_name="SSLCommerz",
-        transaction_id=request.data.get('bank_tran_id'),
-        raw_response=request.data
-    )
 
     return HttpResponseRedirect(
         f"{main_settings.FRONTEND_URL}/dashboard/payment/success/"
     )
+
 
 @api_view(['POST'])
 def payment_cancel(request):
