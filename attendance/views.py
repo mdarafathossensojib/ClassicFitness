@@ -1,8 +1,10 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 from attendance.models import Attendance
 from attendance.serializers import AttendanceSerializer
 from accounts.permissions import IsAdminOrStaff
 from memberships.models import Subscription
+from rest_framework import serializers
 
 class AttendanceViewSet(ModelViewSet):
     """
@@ -14,7 +16,7 @@ class AttendanceViewSet(ModelViewSet):
     Access:
     - Admin: Full access
     - Staff: Create and view attendance
-    - Member: No access
+    - Member: only see
 
     Rules:
     - Only members with active subscriptions
@@ -33,8 +35,28 @@ class AttendanceViewSet(ModelViewSet):
     permission_classes = [IsAdminOrStaff]
 
     def get_queryset(self):
-        active_users = Subscription.objects.filter(
-            is_active=True
-        ).values_list('user_id', flat=True)
+        queryset = Attendance.objects.select_related(
+            'member',
+            'fitness_class'
+        )
 
-        return Attendance.objects.filter(member_id__in=active_users).select_related('member','fitness_class')
+        # Superuser / Staff → see all
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return queryset
+
+        # Member → see only own
+        return queryset.filter(member=self.request.user)
+
+    def perform_create(self, serializer):
+        member = serializer.validated_data.get("member")
+
+        if not Subscription.objects.filter(
+            user=member,
+            is_active=True
+        ).exists():
+            raise serializers.ValidationError(
+                "User does not have an active membership."
+            )
+
+        serializer.save()
+
