@@ -5,10 +5,10 @@ from accounts.permissions import IsAdminOrStaff
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from classes.models import FitnessClass, ClassBooking
+from django.db.models import Count, Q
 
 
 class AttendanceViewSet(ModelViewSet):
-
     serializer_class = AttendanceSerializer
     permission_classes = [IsAdminOrStaff]
 
@@ -73,5 +73,29 @@ class AttendanceViewSet(ModelViewSet):
             })
 
         return Response(result)
+    
+    @action(detail=False, methods=['get'])
+    def my_summary(self, request):
+        queryset = Attendance.objects.filter(
+            member=request.user
+        ).values(
+            'fitness_class',
+            'fitness_class__title'
+        ).annotate(
+            present_count=Count('id', filter=Q(is_present=True)),
+            absent_count=Count('id', filter=Q(is_present=False))
+        )
+
+        data = [
+            {
+                "class_id": item["fitness_class"],
+                "class_title": item["fitness_class__title"],
+                "present_count": item["present_count"],
+                "absent_count": item["absent_count"],
+            }
+            for item in queryset
+        ]
+
+        return Response(data)
 
 
