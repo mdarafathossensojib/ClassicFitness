@@ -29,3 +29,9 @@ class FreeTrialSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["created_at", "contacted"]
 
+        
+    def validate_email(self, value):
+        if FreeTrialRequest.objects.filter(email=value).exists():
+            raise serializers.ValidationError("You already requested a trial.")
+        return value
+
