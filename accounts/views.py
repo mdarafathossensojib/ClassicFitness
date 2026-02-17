@@ -1,11 +1,14 @@
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from accounts.serializers import UserProfileUpdateSerializer
+from accounts.serializers import UserProfileUpdateSerializer, FreeTrialSerializer
 from django.utils import timezone
 from attendance.models import Attendance
 from classes.models import ClassBooking
 from memberships.models import Subscription
+from accounts.models import FreeTrialRequest
+from rest_framework.permissions import AllowAny, IsAdminUser
 
 
 class UserProfileView(APIView):
@@ -95,3 +98,14 @@ class UserDashboardAPIView(APIView):
             "upcoming_classes": upcoming_data,
             "recent_activity": activity_data
         })
+    
+
+
+class FreeTrialViewSet(ModelViewSet):
+    queryset = FreeTrialRequest.objects.all()
+    serializer_class = FreeTrialSerializer
+
+    def get_permissions(self):
+        if self.action == "create":
+            return [AllowAny()]
+        return [IsAdminUser()]

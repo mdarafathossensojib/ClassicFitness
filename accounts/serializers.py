@@ -1,6 +1,6 @@
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from accounts.models import User
+from accounts.models import User, FreeTrialRequest
 
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
@@ -20,3 +20,12 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'address', 'phone_number', 'profile_image', 'date_of_birth', 'gender', 'height', 'weight', 'fitness_goal', 'emergency_contact',
         ]
+
+
+
+class FreeTrialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FreeTrialRequest
+        fields = "__all__"
+        read_only_fields = ["created_at", "contacted"]
+

@@ -54,3 +54,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class FreeTrialRequest(models.Model):
+    GOAL_CHOICES = [
+        ("lose-weight", "Lose Weight"),
+        ("build-muscle", "Build Muscle"),
+        ("improve-fitness", "Improve Fitness"),
+        ("flexibility", "Flexibility"),
+        ("competitive", "Competition Prep"),
+    ]
+
+    full_name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    fitness_goal = models.CharField(max_length=50, choices=GOAL_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    contacted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.email
