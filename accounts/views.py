@@ -54,22 +54,22 @@ class UserDashboardAPIView(APIView):
             is_present=True
         ).count()
 
-        # Upcoming classes
+        # upcoming class
         upcoming_classes = ClassBooking.objects.filter(
             member=user,
             is_cancelled=False,
-            fitness_class__date__gte=timezone.now()
+            fitness_class__class_date__gte=today
         ).select_related("fitness_class")
 
         upcoming_data = [
             {
                 "title": booking.fitness_class.title,
-                "date": booking.fitness_class.date,
+                "date": booking.fitness_class.class_date,
             }
             for booking in upcoming_classes
         ]
 
-        # Recent attendance activity
+        # Recent attendance
         recent_activity = Attendance.objects.filter(
             member=user
         ).order_by("-marked_at")[:5]
