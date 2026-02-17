@@ -6,9 +6,10 @@ from accounts.serializers import UserProfileUpdateSerializer, FreeTrialSerialize
 from django.utils import timezone
 from attendance.models import Attendance
 from classes.models import ClassBooking
-from memberships.models import Subscription
+from memberships.models import Subscription, MembershipPlan
 from accounts.models import FreeTrialRequest
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import IsAdminUser
+from datetime import timedelta
 
 
 class UserProfileView(APIView):
@@ -107,5 +108,34 @@ class FreeTrialViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action == "create":
-            return [AllowAny()]
+            return [IsAuthenticated()]
         return [IsAdminUser()]
+
+    def perform_create(self, serializer):
+        # Save the FreeTrialRequest
+        trial = serializer.save()
+
+        user = self.request.user
+
+        # Check if user already has a trial/subscription
+        existing_trial = FreeTrialRequest.objects.filter(email=user.email).exists()
+        if existing_trial:
+            return  # Already taken
+
+        # Get the Starter plan
+        try:
+            starter_plan = MembershipPlan.objects.get(name="Starter")
+        except MembershipPlan.DoesNotExist:
+            starter_plan = MembershipPlan.objects.create(name="Starter", duration_days=7, price=0)
+
+        # Create 7-day trial subscription
+        start_date = timezone.now().date()
+        end_date = start_date + timedelta(days=starter_plan.duration_days)
+
+        Subscription.objects.create(
+            user=user,
+            plan=starter_plan,
+            start_date=start_date,
+            end_date=end_date,
+            is_active=True
+        )
