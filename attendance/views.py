@@ -18,6 +18,11 @@ class AttendanceViewSet(ModelViewSet):
             'fitness_class'
         )
 
+        class_id = self.request.query_params.get("fitness_class")
+
+        if class_id:
+            queryset = queryset.filter(fitness_class_id=class_id)
+
         if self.request.user.is_staff or self.request.user.is_superuser:
             return queryset
 
