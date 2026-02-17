@@ -10,6 +10,7 @@ from memberships.models import Subscription, MembershipPlan
 from accounts.models import FreeTrialRequest
 from rest_framework.permissions import IsAdminUser
 from datetime import timedelta
+from rest_framework import serializers
 
 
 class UserProfileView(APIView):
@@ -111,24 +112,38 @@ class FreeTrialViewSet(ModelViewSet):
             return [IsAuthenticated()]
         return [IsAdminUser()]
 
-    def perform_create(self, serializer):
-        # Save the FreeTrialRequest
-        trial = serializer.save()
 
+    def perform_create(self, serializer):
         user = self.request.user
 
-        # Check if user already has a trial/subscription
-        existing_trial = FreeTrialRequest.objects.filter(email=user.email).exists()
-        if existing_trial:
-            return  # Already taken
+        existing_subscription = Subscription.objects.filter(
+            user=user,
+            is_active=True
+        ).exists()
 
-        # Get the Starter plan
-        try:
-            starter_plan = MembershipPlan.objects.get(name="Starter")
-        except MembershipPlan.DoesNotExist:
-            starter_plan = MembershipPlan.objects.create(name="Starter", duration_days=7, price=0)
+        if existing_subscription:
+            raise serializers.ValidationError("You already have an active subscription.")
+        
+        already_trial_taken = FreeTrialRequest.objects.filter(
+            email=user.email
+        ).exists()
 
-        # Create 7-day trial subscription
+        if already_trial_taken:
+            raise serializers.ValidationError("You already used your free trial.")
+
+        # Save trial request
+        trial = serializer.save(email=user.email)
+
+        # Get or create Starter plan
+        starter_plan, created = MembershipPlan.objects.get_or_create(
+            name="Starter",
+            defaults={
+                "duration_days": 7,
+                "price": 0
+            }
+        )
+
+        # Create subscription
         start_date = timezone.now().date()
         end_date = start_date + timedelta(days=starter_plan.duration_days)
 
@@ -137,5 +152,6 @@ class FreeTrialViewSet(ModelViewSet):
             plan=starter_plan,
             start_date=start_date,
             end_date=end_date,
-            is_active=True
+            is_active=True,
+            auto_renew=False
         )
