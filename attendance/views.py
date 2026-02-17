@@ -1,36 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
 from attendance.models import Attendance
 from attendance.serializers import AttendanceSerializer
 from accounts.permissions import IsAdminOrStaff
-from memberships.models import Subscription
-from rest_framework import serializers
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from classes.models import FitnessClass, ClassBooking
+
 
 class AttendanceViewSet(ModelViewSet):
-    """
-    Attendance Management API
 
-    Used to track attendance of members
-    for fitness classes.
-
-    Access:
-    - Admin: Full access
-    - Staff: Create and view attendance
-    - Member: only see
-
-    Rules:
-    - Only members with active subscriptions
-      can be marked as present
-    - Each member can have only one
-      attendance record per class
-
-    Endpoints:
-    - GET    /attendance/
-        View attendance records
-    - POST   /attendance/
-        Mark attendance for a class(Only Subscription Member)
-    """
-    
     serializer_class = AttendanceSerializer
     permission_classes = [IsAdminOrStaff]
 
@@ -40,23 +18,55 @@ class AttendanceViewSet(ModelViewSet):
             'fitness_class'
         )
 
-        # Superuser / Staff → see all
         if self.request.user.is_staff or self.request.user.is_superuser:
             return queryset
 
-        # Member → see only own
         return queryset.filter(member=self.request.user)
 
     def perform_create(self, serializer):
-        member = serializer.validated_data.get("member")
-
-        if not Subscription.objects.filter(
-            user=member,
-            is_active=True
-        ).exists():
-            raise serializers.ValidationError(
-                "User does not have an active membership."
-            )
-
         serializer.save()
+
+    # Get booked users for selected class
+    @action(detail=False, methods=['get'], url_path='booked-users')
+    def booked_users(self, request):
+        class_id = request.query_params.get('class_id')
+
+        bookings = ClassBooking.objects.filter(
+            fitness_class_id=class_id,
+            is_cancelled=False
+        ).select_related('member')
+
+        data = [
+            {
+                "member_id": b.member.id,
+                "member_name": b.member.get_full_name(),
+                "email": b.member.email
+            }
+            for b in bookings
+        ]
+
+        return Response(data)
+
+    #Class Attendance Summary
+    @action(detail=False, methods=['get'], url_path='class-summary')
+    def class_summary(self, request):
+        classes = FitnessClass.objects.all()
+
+        result = []
+
+        for cls in classes:
+            total_booked = cls.bookings.filter(is_cancelled=False).count()
+
+            present = cls.attendances.filter(is_present=True).count()
+            absent = total_booked - present
+
+            result.append({
+                "class_id": cls.id,
+                "class_title": cls.title,
+                "present_count": present,
+                "absent_count": absent
+            })
+
+        return Response(result)
+
 
