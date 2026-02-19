@@ -3,6 +3,7 @@ from attendance.models import Attendance
 from attendance.serializers import AttendanceSerializer
 from accounts.permissions import IsAdminOrStaff
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from classes.models import FitnessClass, ClassBooking
 from django.db.models import Count, Q
@@ -10,7 +11,11 @@ from django.db.models import Count, Q
 
 class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
-    permission_classes = [IsAdminOrStaff]
+
+    def get_permissions(self):
+        if self.action == 'my_summary':
+            return [IsAuthenticated()]
+        return [IsAdminOrStaff()]
 
     def get_queryset(self):
         queryset = Attendance.objects.select_related(
