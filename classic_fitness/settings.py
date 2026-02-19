@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'payments',
     'feedback',
     'reports',
+    'contact',
 ]
 
 INTERNAL_IPS = [

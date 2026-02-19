@@ -6,6 +6,7 @@ from attendance.views import AttendanceViewSet
 from services.views import GymServiceViewSet, GymGalleryViewSet
 from feedback.views import ClassFeedbackViewSet, FeedbackViewSet
 from accounts.views import FreeTrialViewSet
+from contact.views import ContactMessageViewSet
 from payments.views import my_payment_history, download_invoice
 
 
@@ -18,6 +19,7 @@ router.register('services', GymServiceViewSet, basename='services')
 router.register('gallery', GymGalleryViewSet, basename='gallery')
 router.register('feedback', FeedbackViewSet, basename='feedback')
 router.register('free-trial', FreeTrialViewSet, basename='free-trial')
+router.register('contact', ContactMessageViewSet, basename='contact')
 
 classes_router = routers.NestedSimpleRouter(router, 'classes', lookup='class')
 classes_router.register('class-feedback', ClassFeedbackViewSet, basename='class-feedback')
