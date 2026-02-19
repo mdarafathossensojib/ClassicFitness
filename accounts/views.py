@@ -112,38 +112,24 @@ class FreeTrialViewSet(ModelViewSet):
             return [IsAuthenticated()]
         return [IsAdminUser()]
 
-
     def perform_create(self, serializer):
         user = self.request.user
 
-        existing_subscription = Subscription.objects.filter(
-            user=user,
-            is_active=True
-        ).exists()
-
-        if existing_subscription:
+        # Check existing subscription
+        if Subscription.objects.filter(user=user, is_active=True).exists():
             raise serializers.ValidationError("You already have an active subscription.")
         
-        already_trial_taken = FreeTrialRequest.objects.filter(
-            email=user.email
-        ).exists()
-
-        if already_trial_taken:
+        # Check if already taken trial
+        if FreeTrialRequest.objects.filter(email=user.email).exists():
             raise serializers.ValidationError("You already used your free trial.")
 
-        # Save trial request
         trial = serializer.save(email=user.email)
 
-        # Get or create Starter plan
-        starter_plan, created = MembershipPlan.objects.get_or_create(
+        starter_plan, _ = MembershipPlan.objects.get_or_create(
             name="Starter",
-            defaults={
-                "duration_days": 7,
-                "price": 0
-            }
+            defaults={"duration_days": 7, "price": 0}
         )
 
-        # Create subscription
         start_date = timezone.now().date()
         end_date = start_date + timedelta(days=starter_plan.duration_days)
 
@@ -155,3 +141,17 @@ class FreeTrialViewSet(ModelViewSet):
             is_active=True,
             auto_renew=False
         )
+
+    # Delete trial + only Starter subscription
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # Delete only Starter subscription linked to this user
+        Subscription.objects.filter(
+            user__email=instance.email,
+            plan__name="Starter",
+            is_active=True
+        ).delete()
+        
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
