@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'classic_fitness.wsgi.app'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://classic-fitness-ui-git-main-md-arafat-hossens-projects.vercel.app",
-    'classic-fitness-ui.vercel.app',
+    'https://classic-fitness-ui.vercel.app',
 ]
 
 
