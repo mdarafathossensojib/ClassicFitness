@@ -13,9 +13,10 @@ class AttendanceViewSet(ModelViewSet):
     serializer_class = AttendanceSerializer
 
     def get_permissions(self):
-        if self.action == 'my_summary':
-            return [IsAuthenticated()]
-        return [IsAdminOrStaff()]
+        if self.action in ['create', 'update', 'destroy', 'class_summary', 'booked_users']:
+            return [IsAdminOrStaff()]
+        return [IsAuthenticated()]
+
 
     def get_queryset(self):
         queryset = Attendance.objects.select_related(
