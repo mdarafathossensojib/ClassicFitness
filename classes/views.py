@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from classes.models import FitnessClass, ClassBooking, Trainer
 from classes.serializers import FitnessClassSerializer, ClassBookingSerializer, BookClassSerializer, TrainerSerializer
 from accounts.permissions import IsAdmin, HasActiveSubscription
+from classes.paginations import DefaultPagination, TrainerPagination
+from classes.filters import FitnessClassFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 # Create your views here.
@@ -18,6 +22,11 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
     """
 
     queryset = FitnessClass.objects.select_related('instructor').prefetch_related('bookings').all()
+    pagination_class = DefaultPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = FitnessClassFilter
+    search_fields = ['name', 'description', 'instructor__name']
+    ordering_fields = ['start_time', 'end_time', 'capacity']
 
     def get_serializer_class(self):
         if self.action == 'book':
@@ -115,6 +124,9 @@ class TrainerViewSet(viewsets.ModelViewSet):
 
     queryset = Trainer.objects.all()
     serializer_class = TrainerSerializer
+    pagination_class = TrainerPagination
+    filter_backends = [SearchFilter]
+    search_fields = ['name', 'specialty']
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:

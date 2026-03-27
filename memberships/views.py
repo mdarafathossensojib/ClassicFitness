@@ -13,6 +13,9 @@ from decouple import config
 from django.conf import settings as main_settings
 from django.http import HttpResponseRedirect
 from payments.models import Payment, Transaction
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from memberships.filters import MembershipPlanFilter
 
 
 # Create your views here.
@@ -33,6 +36,11 @@ class MembershipPlanViewSet(ModelViewSet):
     
     queryset = MembershipPlan.objects.filter(is_active=True)
     permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = MembershipPlanFilter
+    search_fields = ['name']
+    ordering_fields = ['price', 'duration_days']
+
 
     def get_serializer_class(self):
         if self.action == 'subscribe':
