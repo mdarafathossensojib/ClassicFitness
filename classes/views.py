@@ -25,7 +25,7 @@ class FitnessClassViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = FitnessClassFilter
-    search_fields = ['name', 'description', 'instructor__name']
+    search_fields = ['title', 'description']
     ordering_fields = ['start_time', 'end_time', 'capacity']
 
     def get_serializer_class(self):
