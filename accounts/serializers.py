@@ -1,6 +1,6 @@
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from accounts.models import User, FreeTrialRequest
+from accounts.models import User, FreeTrialRequest, Achievement, FitnessActivity
 
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
@@ -35,3 +35,14 @@ class FreeTrialSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You already requested a trial.")
         return value
 
+
+class AchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achievement
+        fields = '__all__'
+
+class FitnessActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FitnessActivity
+        fields = '__all__'
+        read_only_fields = ['user']

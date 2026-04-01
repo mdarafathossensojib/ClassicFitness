@@ -74,3 +74,16 @@ class FreeTrialRequest(models.Model):
 
     def __str__(self):
         return self.email
+
+
+class FitnessActivity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    weight = models.FloatField()
+    workout = models.CharField(max_length=100)
+    date = models.DateField(auto_now_add=True)
+
+class Achievement(models.Model):
+    student_name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    image = CloudinaryField('achievementImage', blank=True, null=True)

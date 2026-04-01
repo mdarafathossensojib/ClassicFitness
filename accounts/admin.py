@@ -1,5 +1,5 @@
 from django.contrib import admin
-from accounts.models import User, FreeTrialRequest
+from accounts.models import User, FreeTrialRequest, Achievement, FitnessActivity
 from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
@@ -28,3 +28,5 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(FreeTrialRequest)
+admin.site.register(Achievement)
+admin.site.register(FitnessActivity)

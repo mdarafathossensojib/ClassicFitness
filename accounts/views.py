@@ -2,15 +2,17 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from accounts.serializers import UserProfileUpdateSerializer, FreeTrialSerializer
+from accounts.serializers import UserProfileUpdateSerializer, FreeTrialSerializer, AchievementSerializer, FitnessActivitySerializer
 from django.utils import timezone
 from attendance.models import Attendance
 from classes.models import ClassBooking
 from memberships.models import Subscription, MembershipPlan
-from accounts.models import FreeTrialRequest
+from accounts.models import FreeTrialRequest, FitnessActivity, Achievement
 from rest_framework.permissions import IsAdminUser
 from datetime import timedelta
 from rest_framework import serializers
+from rest_framework.generics import ListAPIView, ListCreateAPIView
+
 
 
 class UserProfileView(APIView):
@@ -155,3 +157,21 @@ class FreeTrialViewSet(ModelViewSet):
         
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AchievementListView(ListAPIView):
+    queryset = Achievement.objects.all().order_by('-id')
+    serializer_class = AchievementSerializer
+
+
+class FitnessActivityView(ListCreateAPIView):
+    serializer_class = FitnessActivitySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FitnessActivity.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+

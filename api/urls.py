@@ -5,7 +5,7 @@ from memberships.views import MembershipPlanViewSet, initiate_payment, payment_s
 from attendance.views import AttendanceViewSet
 from services.views import GymServiceViewSet, GymGalleryViewSet
 from feedback.views import ClassFeedbackViewSet, FeedbackViewSet
-from accounts.views import FreeTrialViewSet
+from accounts.views import FreeTrialViewSet, AchievementListView, FitnessActivityView
 from contact.views import ContactMessageViewSet
 from payments.views import my_payment_history, download_invoice
 
@@ -37,5 +37,7 @@ urlpatterns = [
     path('payment/cancel/', payment_cancel, name='payment-cancel'),
     path('payment/history/', my_payment_history, name='payment-history'),
     path("payments/invoice/<int:payment_id>/", download_invoice),
+    path('achievements/', AchievementListView.as_view()),
+    path('activities/', FitnessActivityView.as_view()),
 
 ]
