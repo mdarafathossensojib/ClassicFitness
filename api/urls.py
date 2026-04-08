@@ -27,6 +27,7 @@ classes_router.register('class-feedback', ClassFeedbackViewSet, basename='class-
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(classes_router.urls)),
+    path('', include('AI.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('accounts/', include('accounts.urls')),

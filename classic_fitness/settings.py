@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'feedback',
     'reports',
     'contact',
+    'AI',
 ]
 
 INTERNAL_IPS = [
