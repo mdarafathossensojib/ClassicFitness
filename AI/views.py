@@ -5,17 +5,20 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from AI.models import AIPlan
 from decouple import config
+import json
 
 genai.configure(api_key=config('API_KEY'))
+
 
 class AIAssistantView(APIView):
     def post(self, request):
         user = request.user
         plan_type = request.data.get('type') 
-        user_input = request.data.get('input')
+        user_input = request.data.get('input', {})
         
+        input_text = json.dumps(user_input)
         # AI Prompt Engineering
-        prompt = f"As an expert fitness coach and nutritionist, create a detailed {plan_type} for a person with the following data: {user_input}. Provide the answer in clear bullet points and give specific advice."
+        prompt = f"As an expert fitness coach and nutritionist, create a detailed {plan_type} for a person with the following data: {input_text}. Provide the answer in clear bullet points and give specific advice."
         
         try:
             model = genai.GenerativeModel('gemini-1.5-flash')
