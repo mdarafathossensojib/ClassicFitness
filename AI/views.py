@@ -6,8 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from AI.models import AIPlan
 from decouple import config
 import json
+import os
 
-genai.configure(api_key='AIzaSyAKJoGNoHczfUE_qU68qo6_4vW5C2uKn1E')
+api_key = os.environ.get('API_KEY') or config('API_KEY')
+genai.configure(api_key=api_key)
 
 
 class AIAssistantView(APIView):
