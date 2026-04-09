@@ -1,4 +1,4 @@
-import google.generativeai as genai
+from google import genai
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,7 +9,7 @@ import json
 import os
 
 api_key = os.environ.get('API_KEY') or config('API_KEY')
-genai.configure(api_key=api_key)
+client = genai.Client(api_key=api_key)
 
 
 class AIAssistantView(APIView):
@@ -28,8 +28,10 @@ class AIAssistantView(APIView):
         prompt = f"Expert fitness advice for {plan_type} based on: {input_text}. Short bullet points only."
         
         try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model='gemini-2.0-flash',
+                contents=prompt
+            )
 
             if not response or not hasattr(response, 'text'):
                  return Response({'error': 'AI could not generate a response. Please try again.'}, status=500)
