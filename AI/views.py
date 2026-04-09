@@ -7,7 +7,7 @@ from AI.models import AIPlan
 from decouple import config
 import json
 
-genai.configure(api_key=config('API_KEY'))
+genai.configure(api_key='AIzaSyAKJoGNoHczfUE_qU68qo6_4vW5C2uKn1E')
 
 
 class AIAssistantView(APIView):
@@ -15,8 +15,11 @@ class AIAssistantView(APIView):
 
     def post(self, request):
         user = request.user
-        plan_type = request.data.get('type') 
+        plan_type = request.data.get('type', 'workout') 
         user_input = request.data.get('input', {})
+
+        if not user_input:
+            return Response({'error': 'Input data is required'}, status=status.HTTP_400_BAD_REQUEST)
         
         input_text = json.dumps(user_input)
         # AI Prompt Engineering
@@ -25,6 +28,10 @@ class AIAssistantView(APIView):
         try:
             model = genai.GenerativeModel('gemini-1.5-flash')
             response = model.generate_content(prompt)
+
+            if not response or not hasattr(response, 'text'):
+                 return Response({'error': 'AI could not generate a response. Please try again.'}, status=500)
+            
             ai_text = response.text
             
             # Save to Database
