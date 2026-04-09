@@ -11,6 +11,8 @@ genai.configure(api_key=config('API_KEY'))
 
 
 class AIAssistantView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         user = request.user
         plan_type = request.data.get('type') 
@@ -18,7 +20,7 @@ class AIAssistantView(APIView):
         
         input_text = json.dumps(user_input)
         # AI Prompt Engineering
-        prompt = f"As an expert fitness coach and nutritionist, create a detailed {plan_type} for a person with the following data: {input_text}. Provide the answer in clear bullet points and give specific advice."
+        prompt = f"Expert fitness advice for {plan_type} based on: {input_text}. Short bullet points only."
         
         try:
             model = genai.GenerativeModel('gemini-1.5-flash')
